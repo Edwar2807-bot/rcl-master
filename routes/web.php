@@ -39,4 +39,9 @@ Route::get('/userPrueba', 'UserController@testCrear');
 Route::resource('appointments','AppointmentController');
 Route::resource('parameters','ParameterController');
 
+//Modificacion EDWAR
+// Mostrar formulario de registro
+Route::get('/estudiantes/registrar', 'EstudianteController@showForm')->name('estudiantes.registrar');
+// Procesar el formulario de registro
+Route::post('/estudiantes/registrar', 'EstudianteController@store')->name('estudiantes.store');
 
