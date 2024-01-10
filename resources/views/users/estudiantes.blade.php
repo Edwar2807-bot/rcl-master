@@ -34,10 +34,10 @@
                                     <td>{{ $estudiante->email }}</td>
                                     <td>
                                         <!-- Botón para eliminar un estudiante específico -->
-                                        <form action="{{ route('estudiantes.destroy', $estudiante->id) }}" method="POST">
+                                        <form action="{{ route('estudiantes.destroy', $estudiante->id) }}" method="POST" id="delete-form-{{ $estudiante->id }}">                                            
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                            <button type="button" class="btn btn-danger" onclick="confirmDelete({{ $estudiante->id }})">Eliminar</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -51,4 +51,13 @@
 </div>
 @endsection
 
-    
+<script>
+    function confirmDelete(studentId) {
+        if (confirm('¿Estás seguro de que deseas eliminar este estudiante?')) {
+            // Actualizar el action del formulario con el ID correcto
+            document.getElementById('delete-form-' + studentId).submit(); 
+        } else {
+            // Si el usuario cancela, no se hace nada
+        }
+    }
+</script>
