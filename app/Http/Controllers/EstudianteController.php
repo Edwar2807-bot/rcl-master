@@ -6,7 +6,17 @@ use Illuminate\Http\Request;
 use App\User;  // Importa el modelo User
 
 class EstudianteController extends Controller
-{
+{   
+    public function destroy($id)
+    {
+        // Encuentra el estudiante por ID y elimínalo
+        $estudiante = User::findOrFail($id);
+        $estudiante->delete();
+
+        // Redirige a la página de estudiantes con un mensaje de éxito
+        return redirect()->route('estudiantes.index')->with('success', 'Estudiante eliminado correctamente');
+    }
+    
     public function showForm()
     {
         return view('estudiantes.registrar'); // Asegúrate de tener una vista para este formulario.

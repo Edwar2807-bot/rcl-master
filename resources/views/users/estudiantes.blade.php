@@ -21,16 +21,25 @@
                                 <th scope="col">Nombres</th>
                                 <th scope="col">Apellidos</th>
                                 <th scope="col">Email</th>
+                                <th scope="col">Acciones</th> <!-- Nueva columna para el botón de eliminar -->
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($estudiantes as $docente)
+                            @foreach($estudiantes as $estudiante)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $docente->usuario }}</td>
-                                    <td>{{ $docente->name }}</td>
-                                    <td>{{ $docente->last_name }}</td>
-                                    <td>{{ $docente->email }}</td>
+                                    <td>{{ $estudiante->usuario }}</td>
+                                    <td>{{ $estudiante->name }}</td>
+                                    <td>{{ $estudiante->last_name }}</td>
+                                    <td>{{ $estudiante->email }}</td>
+                                    <td>
+                                        <!-- Botón para eliminar un estudiante específico -->
+                                        <form action="{{ route('estudiantes.destroy', $estudiante->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
