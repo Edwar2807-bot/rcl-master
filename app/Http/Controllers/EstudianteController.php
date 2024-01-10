@@ -26,22 +26,27 @@ class EstudianteController extends Controller
     {
         // Validar los datos del formulario
         $request->validate([
+            'usuario' => 'required',
             'email' => 'required|email|unique:users',
             'name' => 'required',
             'last_name' => 'required',
-            'password' => 'required|min:6', // Asegúrate de tener un campo de contraseña en tu formulario.
+            'password' => 'required|min:4', // Asegúrate de tener un campo de contraseña en tu formulario.
         ]);
 
         // Crear un nuevo usuario (estudiante) en la base de datos
-        User::create([
+        User::insert([
             'name' => $request->name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'password' => bcrypt($request->password), // Asegúrate de cifrar la contraseña antes de almacenarla.
+            'usuario' => $request->usuario,
+            'rol' => 3, 
+            'creado' => 2, 
+            'email_verified_at' => now(), 
+            'password' => bcrypt($request->password),
+            'remember_token' => \Str::random(10),  // Asegúrate de cifrar la contraseña antes de almacenarla.
             // Puedes agregar otros campos según sea necesario.
         ]);
 
         return redirect()->route('estudiantes.index')->with('success', 'Estudiante registrado correctamente');
     }
 }
-
