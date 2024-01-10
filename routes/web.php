@@ -49,4 +49,8 @@ Route::get('/estudiantes/registrar', 'EstudianteController@showForm')->name('est
 Route::post('/estudiantes/registrar', 'EstudianteController@store')->name('estudiantes.store');
 //Eliminiar estudiante
 Route::delete('/estudiantes/{id}', 'EstudianteController@destroy')->name('estudiantes.destroy');
-
+//Proteger lista estudiantes - permitido solo para admin
+Route::middleware(['admin'])->group(function () {
+    Route::get('/estudiantes', 'UserController@estudiantes')->name('estudiantes.index');
+    // ... otras rutas protegidas
+});

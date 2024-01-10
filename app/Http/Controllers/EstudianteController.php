@@ -12,7 +12,6 @@ class EstudianteController extends Controller
         // Encuentra el estudiante por ID y elimínalo
         $estudiante = User::findOrFail($id);
         $estudiante->delete();
-
         // Redirige a la página de estudiantes con un mensaje de éxito
         return redirect()->route('estudiantes.index')->with('success', 'Estudiante eliminado correctamente');
     }
@@ -46,7 +45,6 @@ class EstudianteController extends Controller
             'remember_token' => \Str::random(10),  // Asegúrate de cifrar la contraseña antes de almacenarla.
             // Puedes agregar otros campos según sea necesario.
         ]);
-
         return redirect()->route('estudiantes.index')->with('success', 'Estudiante registrado correctamente');
     }
 }
