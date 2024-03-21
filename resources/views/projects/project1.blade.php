@@ -3,7 +3,40 @@
 <style>
     .ytplayer {
 pointer-events: none;
+}
 
+/* Estilos personalizados para el slider */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 200px;
+  height: 10px;
+  margin: 10px 0;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  background: none; /* Sin relleno */
+  border: 1px solid #ccc; /* Bordes */
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: orange;
+  cursor: pointer;
+  border-radius: 50%;
+  margin-top: -5px; /* Ajuste para centrar verticalmente */
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: none;
 }
 
 </style>
@@ -69,12 +102,18 @@ pointer-events: none;
 
                             <div class="row d-flex justify-content-center">
                              
-
+                            {{--
                                 <div class="col-lg-3 col-md-3 col-sm-12">
                                 
                                         <label><b>sp</b> </label>
                                         <input class="sp enter" type="number" value="100" name="sp" style="width: 60px;" id="sp">
                                     
+                                </div>
+                            --}}
+                                <div class="col-lg-3 col-md-3 col-sm-12">
+                                    <label><b>sp</b></label>
+                                    <input class="sp enter" type="range" value="20" name="sp" style="width: 100px;" id="sp" min="3.5" max="36.5" step="0.5" oninput="validarNumero(this)">
+                                    <span id="valorSeleccionado">20</span>
                                 </div>
 
                                 <div class="col-lg-3 col-md-3 col-sm-12">
@@ -113,7 +152,9 @@ pointer-events: none;
                              
 
                                         <h4>PID</h4>
+
                                         <br>
+
                                         <p>Los controladores son elementos que se le agregan al sistema original para mejorar sus características de funcionamiento, con el objetivo de satisfacer las especificaciones de diseño tanto en régimen transitorio como en estado estable.</p>
 
                                         <p>El control proporcional-integral-derivado (PID) es el algoritmo de control más utilizado y con gran aceptación en el control industrial. La popularidad de los controladores PID se puede atribuir en parte a su rendimiento robusto en una amplia gama de condiciones de operación y en parte a su simplicidad funcional, que permite a los ingenieros operarlos de una manera simple y directa.</p>
