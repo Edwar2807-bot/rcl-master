@@ -66,7 +66,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 </div>
 </nav>
                            <div class="tab-content" id="nav-tabContent">
-{{-- <div class="tab-pane fade" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+ <div class="tab-pane fade" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                 <br>
                                     <div class="row d-flex justify-content-center">
                              
@@ -96,7 +96,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
                             </div>
 
                             
-                        </div> --}}
+                        </div> 
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <br>
 
@@ -112,28 +112,28 @@ input[type=range]:focus::-webkit-slider-runnable-track {
                             --}}
                                 <div class="col-lg-3 col-md-3 col-sm-12">
                                     <label><b>sp</b></label>
-                                    <input class="sp enter" type="range" value="20" name="sp" style="width: 100px;" id="sp" min="3.5" max="36.5" step="0.5" oninput="validarNumero(this)">
+                                    <input class="sp enter" type="range" value="20" name="sp" style="width: 100px;" id="sp" min="3.5" max="36.5" step="0.5" oninput="actualizarValorSP(this)">
                                     <span id="valorSeleccionado">20</span>
                                 </div>
 
                                 <div class="col-lg-3 col-md-3 col-sm-12">
                                 
                                         <label><b>kp</b> </label>
-                                        <input class="kp enter" type="number" value="1" name="kp" style="width: 60px;" id="kp">
+                                        <input class="kp enter" type="number" value="12" name="kp" style="width: 60px;" id="kp">
                                     
                                 </div>
 
                                 <div class="col-lg-3 col-md-3 col-sm-12">
                                 
                                         <label><b>ki</b> </label>
-                                        <input class="ki enter" type="number" value="0" name="ki" style="width: 60px;" id="ki">
+                                        <input class="ki enter" type="number" value="1.2" name="ki" style="width: 60px;" id="ki">
                                     
                                 </div>
 
                                 <div class="col-lg-3 col-md-3 col-sm-12">
                                 
                                         <label><b>kd</b> </label>
-                                        <input class="kd enter" type="number" value="0" name="kd" style="width: 60px;" id="kd">
+                                        <input class="kd enter" type="number" value="4000" name="kd" style="width: 60px;" id="kd">
                                     
                                 </div>
 
@@ -343,10 +343,11 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 
 @section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
-<script src="{{ asset('js/Chart.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 
+ <script src="{{ asset('js/Chart.min.js')}}"></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.0.1/chart.js"></script>  --}}
 
 <script type="text/javascript">
 var finish  = '{{$v_motor->finish_time}}';
@@ -483,6 +484,7 @@ var auxControl = false;
 var ant = 0;
 var voltaje = 0;
 var runnig = false;
+var client;
 
 
 var MAX_DATA_SET_LENGTH = 100;
@@ -497,29 +499,30 @@ clientID = "RemoteLAB"+date;
 
 console.log("startConnect "+clientID);
 
-// Fetch the hostname/IP address and port ytaober from the form
-host = "postman.cloudmqtt.com";
-port = "30930";
-
-
-
-client = new Paho.MQTT.Client(host, 30930,clientID);
+//web socket con seguridad TSL wss
+const urlMqtt = 'wss://driver.cloudmqtt.com:38988/mqtt'
 
 // set callback handlers
-client.onConnectionLost = onConnectionLost;
-client.onMessageArrived = onMessageArrived;
+
 var options = {
-useSSL: true,
-userName: "yemifrix",
-password: "Y1PuRGotBrwd",
-onSuccess:onConnect,
-onFailure:doFail
+useSSL: false,
+username: 'echzdwoe',
+password: 'kf9t7h8fUTyZ'
 }
-
 // connect the client
-client.connect(options);
-
+client  = mqtt.connect(urlMqtt, options);
+client.on('connect', onConnect);
+client.on('message', onMessageArrived);
+client.on('error', doFail); // Manejador de errores
 }
+
+//Ver el mensaje que llega a RemoteLAB/
+client.on('message', function (topic, message) {
+  // Verificar si el mensaje está en el topic deseado
+  if (topic === 'RemoteLAB/') {
+    console.log('Mensaje recibido en el topic RemoteLAB/: ' + message.toString());
+  }
+});
 
 // Called when the client connects
 function onConnect() {
@@ -529,7 +532,11 @@ $('#start').prop('disabled', false);
 // Fetch the MQTT topic from the form
 
 // Subscribe to the requested topic
-client.subscribe("RemoteLAB/#");
+client.subscribe("RemoteLAB/speed_c");
+//client.subscribe("RemoteLAB/");
+// Publicar un mensaje en el tema "test"
+var mensaje = "¡Hola desde MQTT!";
+    publish("test", mensaje);
 }
 
 function doFail(e){
@@ -550,15 +557,30 @@ if (responseObject.errorCode !== 0) {
  startConnect();
 }
 
+//Recepcion de JSON ARDUINO
+//const JsonStreamingParser = require("arduino-json-streaming-parser");
+// Crea un nuevo analizador JSON
+//const parser = new JsonStreamingParser();
+
 // Called when a message arrives
-function onMessageArrived(message) {
+function onMessageArrived(topic, message) {
 
-if (message.destinationName == "RemoteLAB/speed_i") {
-    responseMotor(message.payloadString);
-}else if (message.destinationName == "RemoteLAB/speed_c"){
-    responseMotorControl(message.payloadString);
-}
+    //console.log("Mensaje recibido:");
+    //console.log("Topic: " + topic);
+    //console.log("Payload: " + message.toString());
 
+        // Tu lógica para manejar los diferentes topics aquí
+        if (topic == "RemoteLAB/speed_i") {
+            // Lógica para procesar el topic "RemoteLAB/speed_i"
+            //console.log("Recibiendo datos _ speedi");
+            responseMotor(payloadObj);
+        } else if (topic == "RemoteLAB/speed_c") {
+            // Lógica para procesar el topic "RemoteLAB/speed_c"
+            //console.log('Mensaje recibido en el topic RemoteLAB/speed_c:');
+            responseMotorControl(message);
+        } else {
+            console.log("Mensaje recibido en un topic desconocido: " + topic);
+        }
 }
 
 // Called when the disconnection button is pressed
@@ -568,12 +590,16 @@ client.disconnect();
 
 
 // send a message
-function publish (topic, message) {
-console.log("topic: "+topic);
-message = new Paho.MQTT.Message(message);
-message.destinationName = topic;
-message.qos = 1;
-client.send(message);
+
+function publish(topic, message) {
+    console.log("Publicando en el tema: " + topic);
+    client.publish(topic, message, { qos: 1 }, function (error) {
+        if (!error) {
+            console.log("Mensaje publicado con éxito en el tema: " + topic);
+        } else {
+            console.error("Error al publicar mensaje en el tema " + topic + ": " + error);
+        }
+    });
 }
 
 
@@ -593,6 +619,7 @@ if (!before) {
         if (mode == 0) {
             sinControl();
         }else{ 
+            console.log("Run");
             conControl();
         }
         
@@ -670,9 +697,9 @@ function conControl(argument) {
         mainGraph.data.datasets[1].data = [];
         mainGraph.data.datasets[1].label = "Referencia";
         mainGraph.data.datasets[2].label = "Accion de Control";
-        mainGraph.options.scales.xAxes[0].ticks = {};
-        mainGraph.options.scales.xAxes[0].ticks.max = 5;
-        mainGraph.options.scales.xAxes[0].ticks.maxTicksLimit = 10;
+        //mainGraph.options.scales.xAxes[0].ticks = {};
+        mainGraph.options.scales.xAxes[0].ticks.max = 10;  //establece el rango a 10 en escala de x
+        mainGraph.options.scales.xAxes[0].ticks.maxTicksLimit = 5;
         mainGraph.options.scales.xAxes[0].ticks.callback = getXAxisLabel;
         
         mainGraph.update();
@@ -698,8 +725,10 @@ function conControl(argument) {
 function getXAxisLabel(value) {
         try {
             var xMin = mainGraph.options.scales.xAxes[0].ticks.min;
+            console.log("xMin = "+ xMin);
         } catch(e) {
             var xMin = undefined;
+            console.log("xMin no definido");
         }
         if (xMin === value) {
             return '';
@@ -714,7 +743,7 @@ function getXAxisLabel(value) {
 var lineChartData = {
         //labels: labels,
         datasets: [{
-     label: "Velocidad",
+     label: "Posición",
      borderColor: 'red',
      yAxisID: 'A',
             pointBackgroundColor: 'red',
@@ -779,7 +808,7 @@ yAxes: [{
         type: 'linear',
         position: 'right',
         ticks: {
-          max: 7,
+          max: 160,
           min: 0
         }
       },{
@@ -807,102 +836,82 @@ yAxes: [{
         });
 
 function responseMotor(data) {
-datamotor = JSON.parse(data);
-console.log(datamotor);
-
-
-//update
-$('#a').text(a);
-
-k = (parseFloat(datamotor.y)/a).toFixed(3);
-
-$('#k').text(k);
-
-
-ytao = (0.632*parseFloat(datamotor.y)).toFixed(3);
-
-
-mainGraph.data.datasets[0].data.push( {x: datamotor.t, y: datamotor.y});
-mainGraph.data.datasets[2].data.push( {x: datamotor.t, y: voltaje});
-
-mainGraph.update();
-
-
-if (parseFloat(datamotor.t) >= parseFloat(capture) ) {
-$('#start').prop('disabled', false);
-$('#download').prop('disabled', false);
-$('#ymodel').prop('disabled', false);
-oTao = masCercano();
-runnig = false;
-clearTimeout(timer1);
-clearTimeout(timer2);
-timer2 = setTimeout(cambiarTrue,180000);
-timer1 = setTimeout(cambiar,240000);
-$('#oTao').text(oTao.x);
-       Lobibox.notify('success', {
-                size: 'mini',
-                msg: 'Simulation successfully completed.'
-            });
-       
-  }  
-cont++;
-}
-
-var cControl = 1;
-
-function responseMotorControl(data) {
-datamotor = JSON.parse(data);
-console.log(datamotor);
-
-
-runnig = datamotor.run;
-
-if(runnig){
-
-if (parseFloat(datamotor.y) > 200) {
-    datamotor.y = ant;
-}
-
-ant = datamotor.y;
-
-
-  var motorDataLength = mainGraph.data.datasets[0].data.length;
-
-  if (motorDataLength > MAX_DATA_SET_LENGTH) {
-        mainGraph.data.datasets[0].data.shift();
-        mainGraph.data.datasets[2].data.shift();
-        mainGraph.data.datasets[1].data.shift();
-        //mainGraph.data.labels.shift();
-        min = mainGraph.data.datasets[0].data[0].x;
-        mainGraph.options.scales.xAxes[0].ticks.min = min;
-        mainGraph.options.scales.xAxes[0].ticks.max = datamotor.t;
-  }
-
-var v = parseFloat(datamotor.y).toFixed(0);
-  if (cControl == 15) {
-    $('#velocidad').text(v);
-    cControl =0;
-  }
-cControl++;
-
-
-
-mainGraph.data.datasets[0].data.push( {x: datamotor.t, y: datamotor.y});
-mainGraph.data.datasets[1].data.push( {x: datamotor.t, y: datamotor.sp});
-mainGraph.data.datasets[2].data.push( {x: datamotor.t, y: datamotor.m});
-mainGraph.update();
-
-}else {
+    datamotor = JSON.parse(data);
+    console.log(datamotor);
+    //update
+    $('#a').text(a);
+    k = (parseFloat(datamotor.y)/a).toFixed(3);
+    $('#k').text(k);
+    ytao = (0.632*parseFloat(datamotor.y)).toFixed(3);
+    mainGraph.data.datasets[0].data.push( {x: datamotor.t, y: datamotor.y});
+    mainGraph.data.datasets[2].data.push( {x: datamotor.t, y: voltaje});
+    mainGraph.update();
+    if (parseFloat(datamotor.t) >= parseFloat(capture) ) {
+    $('#start').prop('disabled', false);
+    $('#download').prop('disabled', false);
+    $('#ymodel').prop('disabled', false);
+    oTao = masCercano();
+    runnig = false;
     clearTimeout(timer1);
     clearTimeout(timer2);
     timer2 = setTimeout(cambiarTrue,180000);
     timer1 = setTimeout(cambiar,240000);
-    Lobibox.notify('success', {
+    $('#oTao').text(oTao.x);
+        Lobibox.notify('success', {
                     size: 'mini',
                     msg: 'Simulation successfully completed.'
-                });
-    }
+                });       
+    }  
+    cont++;
+}
 
+var cControl = 1;
+
+
+function responseMotorControl(data) {
+    datamotor = JSON.parse(data);
+    //console.log(datamotor);
+    runnig = datamotor.run;
+    console.log(parseFloat(datamotor.m));
+    if(runnig){
+        if (parseFloat(datamotor.y)  > 200) {
+            datamotor.y = ant;
+        }
+        ant = datamotor.y;
+        var motorDataLength = mainGraph.data.datasets[0].data.length;
+
+        if (motorDataLength > MAX_DATA_SET_LENGTH) {
+                mainGraph.data.datasets[0].data.shift();
+                mainGraph.data.datasets[1].data.shift();
+                mainGraph.data.datasets[2].data.shift();
+                //mainGraph.data.labels.shift();
+                min = mainGraph.data.datasets[0].data[0].x;
+                mainGraph.options.scales.xAxes[0].ticks.min = min;
+                mainGraph.options.scales.xAxes[0].ticks.max = datamotor.t;
+        }
+
+        var v = parseFloat(datamotor.y).toFixed(0);
+        if (cControl == 15) {
+            $('#velocidad').text(v);
+            cControl =0;
+        }
+        cControl++;
+
+        mainGraph.data.datasets[0].data.push( {x: datamotor.t, y: datamotor.y});        
+        mainGraph.data.datasets[2].data.push( {x: datamotor.t, y: datamotor.m});
+        mainGraph.data.datasets[1].data.push( {x: datamotor.t, y: datamotor.sp});
+        mainGraph.update();
+
+    }else {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        timer2 = setTimeout(cambiarTrue,180000);
+        timer1 = setTimeout(cambiar,240000);
+        Lobibox.notify('success', {
+                        size: 'mini',
+                        msg: 'Simulation successfully completed.'
+                    });
+        }
 }
 
 
@@ -919,67 +928,56 @@ if(e.keyCode == 13)
 });
  
 
-
-
 function descargar() {
+    var csv = 'x;y\n';
+    mainGraph.data.datasets[0].data.forEach(function(row) {
 
- var csv = 'x;y\n';
-mainGraph.data.datasets[0].data.forEach(function(row) {
+        var d_x = row.x;
+    d_x = d_x.toString();
+    d_x = d_x.replace(".", ",");
 
-    var d_x = row.x;
-   d_x = d_x.toString();
-   d_x = d_x.replace(".", ",");
+        var d_y = row.y;
+    d_y = d_y.toString();
+    d_y = d_y.replace(".", ",");
+            csv += d_x+";"+d_y;
+            csv += "\n";
+    });
 
-     var d_y = row.y;
-   d_y = d_y.toString();
-   d_y = d_y.replace(".", ",");
-
-        csv += d_x+";"+d_y;
-        csv += "\n";
-
-});
-
-var hiddenElement = document.createElement('a');
-hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-hiddenElement.target = '_blank';
-hiddenElement.download = 'data.csv';
-hiddenElement.click();
+    var hiddenElement = document.createElement('a');
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+    hiddenElement.target = '_blank';
+    hiddenElement.download = 'data.csv';
+    hiddenElement.click();
 }
 
 
 
 function masCercano() {
-        var obj = new Object();
-        var diferencia = Number.MAX_SAFE_INTEGER;
-        var cercano_x = 0;
-        mainGraph.data.datasets[0].data.forEach(function(row) {
-            
-            value_y = parseFloat(row.y).toFixed(3);        
-
-            if (value_y == ytao) {
-                obj.x = row.x;
-                obj.y = value_y;
+    var obj = new Object();
+    var diferencia = Number.MAX_SAFE_INTEGER;
+    var cercano_x = 0;
+    mainGraph.data.datasets[0].data.forEach(function(row){
+        
+        value_y = parseFloat(row.y).toFixed(3);
+        if (value_y == ytao) {
+            obj.x = row.x;
+            obj.y = value_y;
             return obj;
-            } else {
-                if(Math.abs(value_y-ytao)<diferencia){
-                    cercano = value_y;
-                    cercano_x = row.x;
-                    diferencia = Math.abs(value_y-ytao);
-                }
+        } else {
+            if(Math.abs(value_y-ytao)<diferencia){
+                cercano = value_y;
+                cercano_x = row.x;
+                diferencia = Math.abs(value_y-ytao);
             }
-
-        });
-
+        }
+    });
     obj.x = cercano_x;
     obj.y = cercano;
-    return obj;
-        
-
-    }
+    return obj; 
+}
 
 function mostrarVideo( ) {
 $("#ytplayer").css("display","block");
-
 }
 
 function graphModel() {
@@ -1021,7 +1019,21 @@ function stopMotor() {
 }
 
 
+function actualizarValorSP(input) {
+        var valorSeleccionadoSpan = document.getElementById("valorSeleccionado");
+        valorSeleccionadoSpan.textContent = input.value;
+    }
 
+    // Obtener el input de rango SP
+    var inputRangoSP = document.getElementById("sp");
+
+    // Actualizar el valor del rango SP al cargar la página
+    actualizarValorSP(inputRangoSP);
+
+    // Escuchar cambios en el input de rango SP y actualizar el valor
+    inputRangoSP.addEventListener("input", function() {
+        actualizarValorSP(this);
+    });
 </script>
 
 @endsection
