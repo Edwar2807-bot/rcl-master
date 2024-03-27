@@ -30,7 +30,9 @@ class Admin
           
             return $next($request); 
         }
-        
+        else{
+            return redirect('/')->with('error', 'Acceso no autorizado');
+        }        
         return redirect()->to('/');
     }
 }

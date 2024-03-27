@@ -62,10 +62,5 @@ class UserController extends Controller
             'password' => \Hash::make('867000008'), 
             'remember_token' => \Str::random(10), 
         ]);
-
-
     }
-
-
-
 }

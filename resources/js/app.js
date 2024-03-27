@@ -30,3 +30,11 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 const app = new Vue({
     el: '#app',
 });
+
+function confirmDelete() {
+    if (confirm('¿Estás seguro de que deseas eliminar este estudiante?')) {
+        document.getElementById('delete-form').submit(); // Envía el formulario si el usuario confirma
+    } else {
+        // Si el usuario cancela, no se hace nada
+    }
+}

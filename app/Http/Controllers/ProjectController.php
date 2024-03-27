@@ -45,6 +45,7 @@ class ProjectController extends Controller
                             ->whereTime('finish_time', '>=', $hora)
                             ->exists();
    
+                            
         return view('projects.index',compact('showmotor','show2'));
     }
 

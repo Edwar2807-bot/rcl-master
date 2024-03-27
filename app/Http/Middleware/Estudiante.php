@@ -26,11 +26,9 @@ class Estudiante
 
     public function handle($request, Closure $next)
     {
-        if($this->auth->user()->rol == 3){
-          
+        if($this->auth->user()->rol == 3){          
             return $next($request); 
-        }
-        
-        return redirect()->to('/');
+        }        
+        return redirect()->to('/')->with('error', 'Acceso no autorizado');
     }
 }
