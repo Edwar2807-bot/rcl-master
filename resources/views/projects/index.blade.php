@@ -15,13 +15,13 @@ color: black;
     <div class="card projects p-3" >
         <div class="card-body">
             <center class="">
-                <h4 class="card-title">Control e Identificación de Sistemas</h4>
+                <h4 class="card-title">Control de Sistemas</h4>
             </center>
         </div>
             <center>
                 <img class="img-fluid" src="{{ asset('img/pid.png') }}">
                <p>
-                   La actividad en el Laboratorio Remoto consiste en una práctica de determinación experimental de la función de transferencia de un péndulo invertido rotacional y el posterior diseño y comprobación del controlador PID
+                   La actividad en el Laboratorio Remoto consiste en una práctica de verificación y sintonización de controladores digitales PID para el sistema Ball and Beam.
                </p>
                @if($showmotor)
                <form class="" action="{{ route('project1.validar') }}" method="POST">    
