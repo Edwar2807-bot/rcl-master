@@ -135,7 +135,7 @@
                                         <div class="col-lg-3 col-md-3 col-sm-12">
                                             <label><b>sp</b></label>
                                             <input class="sp enter" type="range" value="20" name="sp"
-                                                style="width: 100px;" id="sp" min="3.5" max="36.5"
+                                                style="width: 70px;" id="sp" min="4" max="35.5"
                                                 step="0.5" oninput="actualizarValorSP(this)">
                                             <span id="valorSeleccionado">20</span>
                                         </div>
@@ -344,18 +344,18 @@
                                 type="button"> Find G(s)</button>
                         </div>
 
-                        <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 download">
-                            <button disabled id="download" class="btn btn-md btn-success  " onclick="descargar();"
-                                type="button"><i class="fa fa-file"></i> Download</button>
-                        </div>
-
-                        <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 velocidad" style="display: none;">
+                        {{-- <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 velocidad" style="display: none;">
                             <p> <span id="velocidad"></span> cm </p>
-                        </div>
+                        </div> --}}
 
                         <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 stop" style="display: none;">
                             <button disabled id="stop" class="btn btn-md btn-success  " onclick="stopMotor();"
                                 type="button"><i class="fa fa-stop"></i> Stop</button>
+                        </div>
+
+                        <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 download">
+                            <button disabled id="download" class="btn btn-md btn-success  " onclick="descargar();"
+                                type="button"><i class="fa fa-download"></i> DownLoad</button>
                         </div>
 
                     </div>
@@ -445,7 +445,7 @@
                 clearTimeout(timer2);
                 timer1 = setTimeout(cambiar, 180000);
                 prepareFrame();
-                $('.download').hide();
+                $('.download').show();
                 $('#camaraDiv').show();
                 $('#datos1').hide();
                 $('.ymodel').hide();
@@ -459,8 +459,8 @@
                     $("#padre").addClass("col-lg-6");
                 }
                 auxDiv = 1;
-
             });
+
 
             $('#nav-teoria-tab').click(function() {
                 console.log("clic teoria");
@@ -472,13 +472,7 @@
                 $("#padre").removeClass("col-lg-6");
                 $("#padre").addClass("col-lg-12");
                 auxDiv = 0;
-
-
             });
-
-
-
-
         });
 
 
@@ -654,23 +648,15 @@
         function runMotor() {
 
             before = moment().isSameOrAfter(finish);
-
             toTeoria = false;
-
-
-
             if (!before) {
-
                 if (connect) {
-
-
                     if (mode == 0) {
                         sinControl();
                     } else {
                         console.log("Run");
                         conControl();
                     }
-
                 }
             } else {
 
@@ -680,9 +666,7 @@
                 });
 
                 setTimeout(redirectProject, 2000);
-
             }
-
         }
 
         function redirectProject() {
@@ -735,7 +719,6 @@
         }
 
         function conControl(argument) {
-
             $('#stop').prop('disabled', false);
             $('.velocidad').show();
             console.log("runnig...");
@@ -747,12 +730,10 @@
                 mainGraph.data.datasets[2].label = "Accion de Control";
                 //mainGraph.options.scales.xAxes[0].ticks = {};
                 mainGraph.options.scales.xAxes[0].ticks.max = 10; //establece el rango a 10 en escala de x
-                mainGraph.options.scales.xAxes[0].ticks.maxTicksLimit = 5;
-                mainGraph.options.scales.xAxes[0].ticks.callback = getXAxisLabel;
-
+                mainGraph.options.scales.xAxes[0].ticks.maxTicksLimit = 20;
+                //mainGraph.options.scales.xAxes[0].ticks.callback = getXAxisLabel;
                 mainGraph.update();
             }
-
 
             kd = document.getElementById('kd').value;
             ki = document.getElementById('ki').value;
@@ -833,9 +814,9 @@
                 xAxes: [{
                     type: 'linear',
                     ticks: {
-                        max: 3,
+                        max: 10,
                         min: 0,
-                        stepSize: 0.2,
+                        stepSize: 0.5,
                         beginAtZero: true,
 
                     }
@@ -865,9 +846,9 @@
                     display: false,
                     position: 'right',
                     ticks: {
-                        max: 210,
+                        max: 50,
                         min: 0,
-                        stepSize: 10,
+                        stepSize: 5,
                         beginAtZero: true,
                     }
                 }]
@@ -933,15 +914,15 @@
                 ant = datamotor.y;
                 var motorDataLength = mainGraph.data.datasets[0].data.length;
 
-                if (motorDataLength > MAX_DATA_SET_LENGTH) {
+                /*if (motorDataLength > MAX_DATA_SET_LENGTH) {
                     mainGraph.data.datasets[0].data.shift();
                     mainGraph.data.datasets[1].data.shift();
                     mainGraph.data.datasets[2].data.shift();
                     //mainGraph.data.labels.shift();
-                    min = mainGraph.data.datasets[0].data[0].x;
-                    mainGraph.options.scales.xAxes[0].ticks.min = min;
-                    mainGraph.options.scales.xAxes[0].ticks.max = datamotor.t;
-                }
+                    //min = mainGraph.data.datasets[0].data[0].x;
+                    //mainGraph.options.scales.xAxes[0].ticks.min = min;
+                    //mainGraph.options.scales.xAxes[0].ticks.max = datamotor.t;
+                }*/
 
                 var v = parseFloat(datamotor.y).toFixed(0);
                 if (cControl == 15) {
@@ -1068,6 +1049,7 @@
 
         function stopMotor() {
             console.log("stopMotor..");
+            $('#download').prop('disabled',false);
             $('#start').prop('disabled', false);
             $('#stop').prop('disabled', true);
             data = JSON.stringify({
