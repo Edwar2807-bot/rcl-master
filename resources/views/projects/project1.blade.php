@@ -804,7 +804,7 @@
                 pointHitRadius: 0,
                 borderWidth: 2,
             }, {
-                label: "Voltaje",
+                label: "Acción de control",
                 borderColor: 'blue',
                 yAxisID: 'C',
                 pointBackgroundColor: 'blue',
