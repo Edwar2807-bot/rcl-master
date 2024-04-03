@@ -723,9 +723,17 @@
             $('.velocidad').show();
             console.log("runnig...");
             if (!runnig) {
-                mainGraph.data.datasets[0].data = [];
-                mainGraph.data.datasets[2].data = [];
-                mainGraph.data.datasets[1].data = [];
+                mainGraph.clear();
+                mainGraph.destroy();
+// Crear un nuevo gráfico
+                mainGraph = new Chart(chartEl, {
+                    type: 'scatter',
+                    data: lineChartData,
+                    options: options,
+                });
+                mainGraph.data.datasets.forEach(dataset => {
+                    dataset.data = [];
+                });
                 mainGraph.data.datasets[1].label = "Referencia";
                 mainGraph.data.datasets[2].label = "Accion de Control";
                 //mainGraph.options.scales.xAxes[0].ticks = {};
@@ -734,7 +742,9 @@
                 //mainGraph.options.scales.xAxes[0].ticks.callback = getXAxisLabel;
                 mainGraph.update();
             }
-
+            mainGraph.data.datasets.forEach(dataset => {
+                    dataset.data = [];
+                });
             kd = document.getElementById('kd').value;
             ki = document.getElementById('ki').value;
             kp = document.getElementById('kp').value;
