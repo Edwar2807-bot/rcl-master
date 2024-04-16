@@ -131,24 +131,22 @@
                                         </div>
 
                                         <div class="col-lg-2 col-md-3 col-sm-12">
-
                                             <label><b>kp</b> </label>
-                                            <input class="kp enter" type="number" value="22" name="kp"
+                                            <input class="kp enter" type="number" value="11" name="kp"
                                                 style="width: 60px;" id="kp">
-
                                         </div>
 
                                         <div class="col-lg-2 col-md-3 col-sm-12">
 
                                             <label><b>ki</b> </label>
-                                            <input class="ki enter" type="number" value="0.2" name="ki"
+                                            <input class="ki enter" type="number" value="0.7" name="ki"
                                                 style="width: 60px;" id="ki">
                                         </div>
 
                                         <div class="col-lg-2 col-md-3 col-sm-12">
 
                                             <label><b>kd</b> </label>
-                                            <input class="kd enter" type="number" value="10" name="kd"
+                                            <input class="kd enter" type="number" value="5" name="kd"
                                                 style="width: 60px;" id="kd">
                                         </div>
                                     </div>
@@ -190,6 +188,46 @@
                                             parámetros se pueden calcular usando un software como Sisotool de Matlab o
                                             aplicando alguna técnica de sintonización.</p>
 
+                                        <h4>Sintonización metodo Ziegler - Nichols</h4>
+                                        <p>
+                                            El método de Ziegler-Nichols es una técnica clásica de sintonización de
+                                            controladores PID (proporcional-integral-derivativo). Fue desarrollado por John
+                                            G. Ziegler y Nathaniel B. Nichols. Este método se utiliza para ajustar los
+                                            parámetros del controlador PID de manera empírica, es decir, basándose en la
+                                            respuesta del sistema en lazo cerrado.
+                                            El procedimiento básico del método de Ziegler-Nichols implica los siguientes
+                                            pasos:
+                                        <div>
+                                            <ul>
+                                                <li>Establecer el controlador en modo proporcional: Se aumenta gradualmente
+                                                    el
+                                                    parámetro proporcional (Kp) hasta que el sistema comience a oscilar de
+                                                    manera
+                                                    estable como en la figura de abajo, donde el sistema se vuelve
+                                                    oscilatorio con amplitud constante con un Kp de 10.</li>
+                                                <li>Determinar la ganancia crítica (Kcu) y el periodo crítico (Pcu): La
+                                                    ganancia
+                                                    crítica es el valor de Kp cuando el sistema comienza a oscilar de manera
+                                                    estable, y el periodo crítico es el periodo de oscilación
+                                                    correspondiente.</li>
+                                                <li>Calcular los parámetros del controlador PID: Utilizando los valores de
+                                                    Kcu y
+                                                    Pcu, se pueden calcular los parámetros del controlador PID según las
+                                                    reglas de
+                                                    sintonización de Ziegler-Nichols.</li>
+                                            </ul>
+                                        </div>
+                                        </p>
+
+                                        <div class="col-12">
+                                            <div class="text-center">
+                                                <img class="mx-auto d-block img-fluid"
+                                                    src="{{ asset('img/ZN.gif') }}"width="300" height="100">
+                                            </div>
+                                        </div>
+
+                                        <h4>Sistema Ball and Beam</h4>
+
                                         <p>Para el caso del Ball and Beam, su modelo se relaciona con el control de posición
                                             del motor y el control de posición de la pelota en la viga, para este sistema
                                             empleamos un servomotor que nos entrega el control de angulo con un rango entre
@@ -222,21 +260,20 @@
                                         </div>
                                         <br>
 
+
                                         <p>La siguiente ecuación integra el resultado de la función de transferencia del
                                             sistema, con la cual puedes determinar los parámetros
-                                            del PID que mejoran la respuesta de sistema Ball and Beam.
+                                            del PID que mejoran la respuesta de sistema Ball and Beam:
                                         </p>
                                         <br>
-
                                         <div class="col-12">
                                             <div class="text-center">
-                                                <div class="equation">
-                                                    <span>G(s) = </span>
-                                                    <span class="numerator">3s<sup>3</sup> + 2s<sup>2</sup> - 5s + 7</span>
-                                                    <span class="denominator">2s<sup>2</sup> - 4</span>
-                                                </div>
+                                                <img class="mx-auto d-block img-fluid"
+                                                    src="{{ asset('img/gs.png') }}"width="350" height="130">
                                             </div>
                                         </div>
+                                        <br>
+
                                     </div>
                                 </div>
                             </div>
@@ -309,15 +346,16 @@
                         <h4 class="card-title">Controlador Metodo Ziegler - Nichols</h4>
                         <div class="row d-flex justify-content-center">
                             <div class="col-lg-6">
-                                <div class="d-flex">                                    
+                                <div class="d-flex">
                                     <div class="flex-grow-2" style="padding-right: 15px;">
-                                        <b>Tu(s)</b>  
-                                        <input type="number" id="Tu_Value" style="width: 50px; height: 35px;">   
+                                        <b>Tu(s)</b>
+                                        <input type="number" id="Tu_Value" style="width: 50px; height: 35px;">
                                     </div>
-                                    
+
                                     <div class="flex-grow-1" style="padding-right: 15px;">
                                         <br>
-                                        <button disabled id="ymodel" style="width: 60px; height: 35px;" class="btn btn-md btn-primary  " onclick="FindZiegler();"
+                                        <button disabled id="ymodel" style="width: 60px; height: 35px;"
+                                            class="btn btn-md btn-primary  " onclick="FindZiegler();"
                                             type="button">Find</button>
                                     </div>
 
@@ -335,7 +373,7 @@
 
                                     <div class="col-lg-3 col-md-3 col-sm-12">
                                         <br>
-                                        <p  id="Kd_Z"><b>Kd: </b><span id="Kd_ZV"></span>
+                                        <p id="Kd_Z"><b>Kd: </b><span id="Kd_ZV"></span>
                                         </p>
                                     </div>
                                 </div>
@@ -644,7 +682,7 @@
                     options: options,
                 });
                 mainGraph.data.datasets[1].label = "Referencia";
-                mainGraph.data.datasets[2].label = "Accion de Control";               
+                mainGraph.data.datasets[2].label = "Accion de Control";
                 mainGraph.options.scales.xAxes[0].ticks.max = Capture_tiempo;
                 mainGraph.options.scales.xAxes[0].ticks.maxTicksLimit = 40;
                 mainGraph.update();
@@ -898,7 +936,7 @@
             var kdElementZV = document.getElementById('Kd_ZV');
             TiempoU = document.getElementById('Tu_Value').value;
             var Ku = document.getElementById('kp_ident').value;
-            
+
 
             kpElement.style.display = 'inline';
             kiElement.style.display = 'inline';
@@ -967,7 +1005,6 @@
         inputRangoSP.addEventListener("input", function() {
             actualizarValorSPI(this);
         });
-
     </script>
 @endsection
 @endsection
